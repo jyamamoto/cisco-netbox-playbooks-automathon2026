@@ -49,6 +49,15 @@
         config: "{{ lookup('file', '/tmp/vlan_config_{{ inventory_hostname }}.yml') | from_yaml }}"
         state: overridden
 
+    - name: Read the rendered file from destination
+      ansible.builtin.slurp:
+        src: /tmp/vlan_config_{{ inventory_hostname }}.yml
+      register: remote_file
+    
+    - name: Show the content of the rendered VLAN configuration
+      ansible.builtin.debug:
+        msg: "{{ remote_file['content'] | b64decode }}"
+
     - name: Retrieve running configuration VLAN section
       cisco.ios.ios_command:
         commands: ["show running-config | section vlan"]
