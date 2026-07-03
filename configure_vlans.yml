@@ -55,8 +55,8 @@
     - name: Apply VLAN configuration to Cisco IOS devices
       when: ansible_network_os == 'cisco.ios.ios'
       cisco.ios.ios_vlans:
-        config: "{{ lookup('file', '/tmp/vlan_config_{{ inventory_hostname }}.yml') | from_yaml }}"
-        state: overridden
+        config: "{{ lookup('ansible.builtin.template', 'templates/vlan_config.j2') | from_yaml }}"
+        state: overridde
 
     - name: Retrieve running configuration VLAN section
       cisco.ios.ios_command:
