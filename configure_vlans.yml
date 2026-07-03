@@ -56,7 +56,7 @@
       when: ansible_network_os == 'cisco.ios.ios'
       cisco.ios.ios_vlans:
         config: "{{ lookup('ansible.builtin.template', 'templates/vlan_config.j2') | from_yaml }}"
-        state: overridden
+        state: merged
 
     - name: Retrieve running configuration VLAN section
       cisco.ios.ios_command:
