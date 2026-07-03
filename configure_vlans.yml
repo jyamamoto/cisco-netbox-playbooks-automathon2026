@@ -54,18 +54,24 @@
 
     - name: Retrieve running configuration VLAN section
       cisco.ios.ios_command:
-        commands: ["show running-config | section vlan"]
+        commands: ["show vlan brief"]
       register: vlan_config
 
     - name: Display VLAN configuration
       ansible.builtin.debug:
         var: vlan_config.stdout_lines
-        
-    - name: Apply VLAN configuration to Cisco IOS devices
+    
+    - name: Detener el playbook aquí de forma limpia
+      ansible.builtin.meta: end_play
+
+    - name: Apply VLAN configuration using ios_config
       when: ansible_network_os == 'cisco.ios.ios'
-      cisco.ios.ios_vlans:
-        config: "{{ lookup('ansible.builtin.template', 'templates/vlan_config.j2') | from_yaml }}"
-        state: merged
+      cisco.ios.ios_config:
+        lines:
+          - "vlan {{ item.vlan_id }}"
+          - "name {{ item.name }}"
+        match: line
+      loop: "{{ lookup('ansible.builtin.template', 'templates/vlan_config.j2') | from_yaml }}"
 
     - name: Retrieve running configuration VLAN section
       cisco.ios.ios_command:
