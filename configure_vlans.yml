@@ -52,6 +52,15 @@
       ansible.builtin.debug:
         msg: "{{ remote_file['content'] | b64decode }}"
 
+    - name: Retrieve running configuration VLAN section
+      cisco.ios.ios_command:
+        commands: ["show running-config | section vlan"]
+      register: vlan_config
+
+    - name: Display VLAN configuration
+      ansible.builtin.debug:
+        var: vlan_config.stdout_lines
+        
     - name: Apply VLAN configuration to Cisco IOS devices
       when: ansible_network_os == 'cisco.ios.ios'
       cisco.ios.ios_vlans:
