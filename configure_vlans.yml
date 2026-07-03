@@ -42,13 +42,7 @@
       ansible.builtin.template:
         src: templates/vlan_config.j2
         dest: /tmp/vlan_config_{{ inventory_hostname }}.yml
-
-    - name: Apply VLAN configuration to Cisco IOS devices
-      when: ansible_network_os == 'cisco.ios.ios'
-      cisco.ios.ios_vlans:
-        config: "{{ lookup('file', '/tmp/vlan_config_{{ inventory_hostname }}.yml') | from_yaml }}"
-        state: overridden
-
+      
     - name: Read the rendered file from destination
       ansible.builtin.slurp:
         src: /tmp/vlan_config_{{ inventory_hostname }}.yml
@@ -57,6 +51,12 @@
     - name: Show the content of the rendered VLAN configuration
       ansible.builtin.debug:
         msg: "{{ remote_file['content'] | b64decode }}"
+
+    - name: Apply VLAN configuration to Cisco IOS devices
+      when: ansible_network_os == 'cisco.ios.ios'
+      cisco.ios.ios_vlans:
+        config: "{{ lookup('file', '/tmp/vlan_config_{{ inventory_hostname }}.yml') | from_yaml }}"
+        state: overridden
 
     - name: Retrieve running configuration VLAN section
       cisco.ios.ios_command:
